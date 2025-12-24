@@ -8,7 +8,6 @@ router.post("/create-order", async (req, res) => {
   try {
     const { amount } = req.body;
 
-    // basic validation
     if (!amount) {
       return res.status(400).json({ message: "Amount is required" });
     }
@@ -19,10 +18,17 @@ router.post("/create-order", async (req, res) => {
       order_id: orderId,
       order_amount: amount,
       order_currency: "INR",
+
+      // ✅ VERY IMPORTANT (REDIRECT FIX)
+      order_meta: {
+        return_url:
+          "https://pixel-walls.com/payment-status.html?order_id={order_id}"
+      },
+
       customer_details: {
         customer_id: "cust_" + uuidv4(),
-        customer_name: "Test User",
-        customer_email: "test@example.com",
+        customer_name: "PixelWalls User",
+        customer_email: "support@pixel-walls.com",
         customer_phone: "9999999999"
       }
     };
