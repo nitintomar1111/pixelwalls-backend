@@ -5,32 +5,36 @@ require("dotenv").config();
 const app = express();
 
 /**
- * ✅ CORS CONFIG (RENDER FIX)
+ * ✅ SAFE CORS CONFIG (RENDER + CASHFREE COMPATIBLE)
  */
 app.use(cors({
   origin: [
     "https://pixel-walls.com",
     "https://www.pixel-walls.com"
   ],
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false
 }));
 
-// ✅ VERY IMPORTANT: preflight support
-app.options("*", cors());
+// ❌ DO NOT use app.options("*") — it crashes Render
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ROUTES
+/**
+ * ROUTES
+ */
 app.use("/api/payments", require("./routes/payment.routes"));
 
-// TEST ROUTE
+/**
+ * HEALTH CHECK
+ */
 app.get("/", (req, res) => {
   res.send("PixelWalls Backend is running 🚀");
 });
 
-const PORT = process.env.PORT || 10000; // Render uses dynamic port
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
