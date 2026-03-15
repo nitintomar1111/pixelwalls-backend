@@ -37,8 +37,8 @@ mongoose.connect(process.env.MONGODB_URI)
  */
 
 app.use("/api/payments", require("./routes/payment.routes"));
-app.use("/api/auth", require("./routes/auth.routes"));
-app.use("/api/wallpapers", require("./routes/wallpaper.routes"));
+// app.use("/api/auth", require("./routes/auth.routes"));
+// app.use("/api/wallpapers", require("./routes/wallpaper.routes"));
 
 /**
  * HEALTH CHECK
