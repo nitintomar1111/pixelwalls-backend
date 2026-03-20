@@ -6,13 +6,16 @@ const { v4: uuidv4 } = require("uuid");
 // CREATE CASHFREE ORDER
 router.post("/create-order", async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { amount, wallpaperId } = req.body;
 
     if (!amount) {
       return res.status(400).json({ message: "Amount is required" });
     }
 
     const orderId = "order_" + uuidv4();
+
+    global.paymentMap = global.paymentMap || {};
+global.paymentMap[orderId] = wallpaperId;
 
     const payload = {
       order_id: orderId,
@@ -58,6 +61,13 @@ router.post("/create-order", async (req, res) => {
       error: error.response?.data || error.message
     });
   }
+});
+router.get("/verify/:orderId", (req, res) => {
+  const orderId = req.params.orderId;
+
+  const wallpaperId = global.paymentMap?.[orderId];
+
+  res.json({ wallpaperId });
 });
 
 module.exports = router;
