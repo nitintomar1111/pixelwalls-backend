@@ -29,7 +29,15 @@ router.post("/signup", async (req, res) => {
 
     await newUser.save();
 
-    res.json({ success: true, message: "Signup successful" });
+    res.json({
+  success: true,
+  message: "Signup successful",
+  user: {
+    _id: newUser._id,
+    name: newUser.name,
+    email: newUser.email
+  }
+});
 
   } catch (err) {
     console.error(err);
@@ -65,11 +73,12 @@ router.post("/login", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({
+   res.json({
   success: true,
   message: "Login successful",
   token,
   user: {
+    _id: user._id,
     name: user.name,
     email: user.email
   }
