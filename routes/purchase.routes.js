@@ -23,9 +23,11 @@ router.post("/add", async (req, res) => {
 /* GET USER PURCHASES */
 router.get("/:userId", async (req, res) => {
   try {
-    const purchases = await Purchase.find({
-      userId: req.params.userId
-    });
+    const mongoose = require("mongoose");
+
+const purchases = await Purchase.find({
+  userId: new mongoose.Types.ObjectId(req.params.userId)
+});
 
     res.json(purchases);
 
