@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
+const Order = require("../models/Order");
 const { v4: uuidv4 } = require("uuid");
 
 // CREATE CASHFREE ORDER
@@ -14,8 +15,10 @@ router.post("/create-order", async (req, res) => {
 
     const orderId = "order_" + uuidv4();
 
-    global.paymentMap = global.paymentMap || {};
-global.paymentMap[orderId] = wallpaperId;
+    await Order.create({
+  orderId: orderId,
+  wallpaperId: wallpaperId
+});
 
     const payload = {
       order_id: orderId,
@@ -62,12 +65,25 @@ global.paymentMap[orderId] = wallpaperId;
     });
   }
 });
-router.get("/verify/:orderId", (req, res) => {
-  const orderId = req.params.orderId;
+router.get("/verify/:orderId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
 
-  const wallpaperId = global.paymentMap?.[orderId];
+    const order = await Order.findOne({ orderId });
 
-  res.json({ wallpaperId });
+    if (!order) {
+      return res.json({ success: false });
+    }
+
+    res.json({
+      success: true,
+      wallpaperId: order.wallpaperId
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
 });
 
 module.exports = router;
