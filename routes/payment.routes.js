@@ -28,7 +28,7 @@ router.post("/create-order", async (req, res) => {
       // ✅ VERY IMPORTANT (REDIRECT FIX)
       order_meta: {
         return_url:
-            "https://pixel-walls.com/index.html?order_id={order_id}"
+  "https://pixel-walls.com/purchased.html?order_id={order_id}"
       },
 
       customer_details: {
