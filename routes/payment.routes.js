@@ -76,6 +76,9 @@ router.get("/verify/:orderId", async (req, res) => {
     // 1️⃣ Find order
     const order = await Order.findOne({ orderId });
 
+    console.log("ORDER DATA:", order);
+console.log("USER ID:", order.userId);
+
     if (!order) {
       return res.json({ success: false });
     }
