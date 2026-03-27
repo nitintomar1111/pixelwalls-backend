@@ -67,7 +67,7 @@ router.post("/create-order", async (req, res) => {
     });
   }
 });
-const Purchase = require("../models/purchase");
+const Purchase = require("../models/Purchase");
 
 router.get("/verify/:orderId", async (req, res) => {
   try {
