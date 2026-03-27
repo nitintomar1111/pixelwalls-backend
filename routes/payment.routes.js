@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 // CREATE CASHFREE ORDER
 router.post("/create-order", async (req, res) => {
   try {
-    const { amount, wallpaperId } = req.body;
+    const { amount, wallpaperId, userId } = req.body;
 
     if (!amount) {
       return res.status(400).json({ message: "Amount is required" });
@@ -17,7 +17,9 @@ router.post("/create-order", async (req, res) => {
 
     await Order.create({
   orderId: orderId,
-  wallpaperId: wallpaperId
+  wallpaperId: wallpaperId,
+  userId: userId,      // ✅ ADD
+  status: "PENDING"
 });
 
     const payload = {
