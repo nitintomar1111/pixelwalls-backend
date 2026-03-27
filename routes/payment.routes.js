@@ -67,20 +67,57 @@ router.post("/create-order", async (req, res) => {
     });
   }
 });
+const Purchase = require("../models/purchase");
+
 router.get("/verify/:orderId", async (req, res) => {
   try {
-    const orderId = req.params.orderId;
+    const { orderId } = req.params;
 
+    // 1️⃣ Find order
     const order = await Order.findOne({ orderId });
 
     if (!order) {
       return res.json({ success: false });
     }
 
-    res.json({
-      success: true,
-      wallpaperId: order.wallpaperId
-    });
+    // 2️⃣ Verify from Cashfree
+    const response = await axios.get(
+      `${process.env.CASHFREE_BASE_URL}/orders/${orderId}`,
+      {
+        headers: {
+          "x-client-id": process.env.CASHFREE_APP_ID,
+          "x-client-secret": process.env.CASHFREE_SECRET_KEY,
+          "x-api-version": "2023-08-01"
+        }
+      }
+    );
+
+    const paymentStatus = response.data.order_status;
+
+    // 3️⃣ If paid → SAVE in MongoDB
+    if (paymentStatus === "PAID") {
+
+      const alreadyExists = await Purchase.findOne({
+        userId: order.userId,
+        wallpaperId: order.wallpaperId
+      });
+
+      if (!alreadyExists) {
+        await Purchase.create({
+          userId: order.userId,
+          wallpaperId: order.wallpaperId
+        });
+      }
+
+      // update order status
+      order.status = "PAID";
+      await order.save();
+
+      return res.json({ success: true });
+
+    } else {
+      return res.json({ success: false });
+    }
 
   } catch (err) {
     console.error(err);
